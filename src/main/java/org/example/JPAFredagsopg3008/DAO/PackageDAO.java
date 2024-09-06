@@ -13,10 +13,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PackageDAO {
-    private static PackageDAO instance;
-    private EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+    EntityManagerFactory emf;
 
-    public Package getPackageById(Object id) {
+    public PackageDAO(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
+
+    public Package getById(Object id) {
         Package found;
         try (EntityManager em = emf.createEntityManager()) {
             found = em.find(Package.class, id);
@@ -27,7 +31,7 @@ public class PackageDAO {
         return found;
     }
 
-    public Set<Package> getAllPackages() {
+    public Set<Package> getAll() {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<Package> query = em.createQuery("select p from Package p", Package.class);
             Set<Package> result = query.getResultList().stream().collect(Collectors.toSet());
@@ -53,7 +57,7 @@ public class PackageDAO {
         }
     }
 
-    public Package createPackage(Package p) {
+    public Package create(Package p) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.persist(p);
@@ -65,7 +69,7 @@ public class PackageDAO {
         return null;
     }
 
-    public void updatePackage(Package p) { // only delivery, reciever name and trackingnumber.
+    public void update(Package p) { // only delivery, reciever name and trackingnumber.
         try (EntityManager em = emf.createEntityManager()) {
             Package found = em.find(Package.class, p.getId());
             if (found == null) {
@@ -92,7 +96,7 @@ public class PackageDAO {
     }
 
 
-    public void deletePackage(Package p) {
+    public void delete(Package p) {
         try (EntityManager em = emf.createEntityManager()) {
             Package found = em.find(Package.class, p.getId());
             if (found == null) {
@@ -107,7 +111,8 @@ public class PackageDAO {
     }
 
     public static void main(String[] args) {
-        PackageDAO dao = new PackageDAO();
+        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+        PackageDAO dao = new PackageDAO(emf);
 
      /*   // Persist packages
         ArrayList<Package> packages = new ArrayList<>();
@@ -119,20 +124,20 @@ public class PackageDAO {
         packages.add(new Package("TRACK3141", "Ivy", "Jack", Package.DeliveryStatus.IN_TRANSIT));
 
         for (Package p : packages) {
-            dao.createPackage(p);
+            dao.create(p);
         }*/
 
         // Update package delivery status
-        Package updatedPackage = Package.builder().id(4).deliveryStatus(Package.DeliveryStatus.IN_TRANSIT).build();
-        dao.updatePackage(updatedPackage);
+        Package updatedPackage = Package.builder().id(4L).deliveryStatus(Package.DeliveryStatus.IN_TRANSIT).build();
+        dao.update(updatedPackage);
 
         // Find package by trackingNumber.
         Package packageByTrackingNumber = dao.getPackageByTrackingNumber("TRACK1121");
         System.out.println(packageByTrackingNumber);
 
        /* // Remove package from system.
-        Package packageForDeleting = dao.getPackageById(2);
-        dao.deletePackage(packageForDeleting);
+        Package packageForDeleting = dao.getById(2);
+        dao.delete(packageForDeleting);
 */
     }
 }
