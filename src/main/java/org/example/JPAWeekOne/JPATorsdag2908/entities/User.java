@@ -1,4 +1,4 @@
-package org.example.JPATorsdag2908.entities;
+package org.example.JPAWeekOne.JPATorsdag2908.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

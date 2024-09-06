@@ -1,9 +1,11 @@
-package org.example.JPAFredagsopg3008.entity;
+package org.example.JPAWeekOne.JPAFredagsopg3008.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "packages")
@@ -11,13 +13,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @ToString
 public class Package {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "tracking_number", nullable = false)
     private String trackingNumber;
@@ -35,18 +36,26 @@ public class Package {
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 
+    @OneToMany(mappedBy = "shipmentPackage")
+    private Set<Shipment> shipments = new HashSet<>();
+
     public enum DeliveryStatus {
         PENDING,
         IN_TRANSIT,
         DELIVERED;
     }
 
-    @Builder//spørg hvorfor den laves.
+    @Builder
     public Package(String trackingNumber, String senderName, String recieverName, DeliveryStatus deliveryStatus) {
         this.trackingNumber = trackingNumber;
         this.senderName = senderName;
         this.recieverName = recieverName;
         this.deliveryStatus = deliveryStatus;
+    }
+
+    public void addShipment(Shipment shipment) {
+        shipments.add(shipment);
+        shipment.setShipmentPackage(this);
     }
 
     @PrePersist

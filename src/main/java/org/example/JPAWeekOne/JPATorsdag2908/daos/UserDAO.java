@@ -1,10 +1,10 @@
-package org.example.JPATorsdag2908.daos;
+package org.example.JPAWeekOne.JPATorsdag2908.daos;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
-import org.example.JPATorsdag2908.entities.User;
+import org.example.JPAWeekOne.JPATorsdag2908.entities.User;
 import org.example.persistence.HibernateConfig;
 import org.hibernate.exception.ConstraintViolationException;
 

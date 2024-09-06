@@ -1,4 +1,4 @@
-package org.example.JPATorsdag2908.daos;
+package org.example.JPAWeekOne.JPATorsdag2908.daos;
 
 import java.util.Set;
 

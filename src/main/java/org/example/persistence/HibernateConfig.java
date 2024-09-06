@@ -1,11 +1,15 @@
 package org.example.persistence;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.example.JPAWeekOne.JPAFredagsopg3008.entity.Location;
+import org.example.JPAWeekOne.JPAFredagsopg3008.entity.Package;
+import org.example.JPAWeekOne.JPAFredagsopg3008.entity.Shipment;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -15,25 +19,33 @@ import java.util.Properties;
 public class HibernateConfig {
     private static EntityManagerFactory emf;
     private static boolean isIntegrationTest = false; // this flag is set for
+
     public static void setTestMode(boolean isTest) {
         HibernateConfig.isIntegrationTest = isTest;
     }
 
     private static EntityManagerFactory emfTest;
+
     public static EntityManagerFactory getEntityManagerFactory() {
         if (emf == null)
             emf = createEMF(false);
         return emf;
     }
+
     public static EntityManagerFactory getEntityManagerFactoryForTest() {
         if (emfTest == null)
             emfTest = createEMF(true);
         return emfTest;
     }
+
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
         //configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(org.example.JPAFredagsopg3008.entity.Package.class);
+        //configuration.addAnnotatedClass(Person.class);
+        //  configuration.addAnnotatedClass(PersonDetail.class);
+        configuration.addAnnotatedClass(Package.class);
+        configuration.addAnnotatedClass(Location.class);
+        configuration.addAnnotatedClass(Shipment.class);
     }
 
     private static EntityManagerFactory createEMF(boolean forTest) {
@@ -42,13 +54,11 @@ public class HibernateConfig {
             Properties props = new Properties();
             // Set the properties
             setBaseProperties(props);
-            if(forTest || isIntegrationTest) {
+            if (forTest || isIntegrationTest) {
                 props = setTestProperties(props);
-            }
-            else if(System.getenv("DEPLOYED") != null) {
+            } else if (System.getenv("DEPLOYED") != null) {
                 setDeployedProperties(props);
-            }
-            else {
+            } else {
                 props = setDevProperties(props);
             }
             configuration.setProperties(props);
@@ -69,7 +79,7 @@ public class HibernateConfig {
         return "jpafridayexcersize3008";
     }
 
-    private static Properties setBaseProperties(Properties props){
+    private static Properties setBaseProperties(Properties props) {
         props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
         props.put("hibernate.hbm2ddl.auto", "update");
@@ -80,19 +90,21 @@ public class HibernateConfig {
         return props;
     }
 
-    private static Properties setDeployedProperties(Properties props){
+    private static Properties setDeployedProperties(Properties props) {
         props.setProperty("hibernate.connection.url", System.getenv("CONNECTION_STR") + getDBName());
         props.setProperty("hibernate.connection.username", System.getenv("postgres"));
         props.setProperty("hibernate.connection.password", System.getenv("postgres"));
         return props;
     }
-    private static Properties setDevProperties(Properties props){
-        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/"+ getDBName());
+
+    private static Properties setDevProperties(Properties props) {
+        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/" + getDBName());
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "postgres");
         return props;
     }
-    private static Properties setTestProperties(Properties props){
+
+    private static Properties setTestProperties(Properties props) {
 //        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.testcontainers.jdbc.ContainerDatabaseDriver");
         props.put("hibernate.connection.url", "jdbc:tc:postgresql:15.3-alpine3.18:///test_db");
