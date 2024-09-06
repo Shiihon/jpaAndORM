@@ -149,5 +149,4 @@ public class PackageDAO implements IDAO<Package> {
         Package packageById = dao.getById(1L);
         System.out.println(packageById);
     }
-
 }
